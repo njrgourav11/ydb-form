@@ -5,7 +5,7 @@ import Link from 'next/link';
 import surveyData from './data.json';
 
 export default function Form() {
-  const [formData, setFormData] = useState({});
+  const [formData, setFormData] = useState<Record<string, string | string[]>>({});
   const [currentStep, setCurrentStep] = useState(0);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const totalSteps = surveyData.survey.sections.length;
@@ -27,9 +27,9 @@ export default function Form() {
   // Check if current step's required fields are filled
   const isCurrentStepValid = () => {
     const currentSection = surveyData.survey.sections[currentStep];
-    const requiredQuestions = currentSection.questions.filter(q => q.required);
+    const requiredQuestions = currentSection.questions.filter((q: {required?: boolean}) => q.required);
     
-    return requiredQuestions.every(question => {
+    return requiredQuestions.every((question: {questionId: string}) => {
       const value = formData[question.questionId];
       if (!value) return false;
       if (Array.isArray(value)) return value.length > 0;
@@ -37,19 +37,20 @@ export default function Form() {
     });
   };
 
-  const handleChange = (e) => {
-    const { name, value, type, checked } = e.target;
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+    const { name, value, type } = e.target;
+    const checked = (e.target as HTMLInputElement).checked;
     setFormData(prevData => ({
       ...prevData,
       [name]: type === 'checkbox' ? 
         (checked ? 
           (prevData[name] ? [...prevData[name], value] : [value]) : 
-          (prevData[name] ? prevData[name].filter(v => v !== value) : [])
+          (prevData[name] ? (prevData[name] as string[]).filter((v: string) => v !== value) : [])
         ) : value
     }));
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setIsSubmitting(true);
     
@@ -72,7 +73,7 @@ export default function Form() {
     }
   };
 
-  const goToStep = (step) => {
+  const goToStep = (step: number) => {
     setCurrentStep(step);
   };
 
@@ -225,7 +226,7 @@ export default function Form() {
                           }}
                         >
                           <option value="" className="text-slate-500 bg-white">Select an option...</option>
-                          {question.options.map((option) => (
+                          {question.options?.map((option) => (
                             <option key={option.value} value={option.value} className="text-slate-800 bg-white py-2">{option.label}</option>
                           ))}
                         </select>
@@ -233,7 +234,7 @@ export default function Form() {
                       
                       {question.type === 'radio' && (
                         <div className="space-y-2 sm:space-y-3">
-                          {question.options.map((option) => (
+                          {question.options?.map((option) => (
                             <label key={option.value} className={`flex items-center p-3 sm:p-4 bg-slate-50 rounded-xl border-2 ${colors.hover} cursor-pointer transition-all hover:shadow-md`}>
                               <input 
                                 type="radio" 
@@ -252,7 +253,7 @@ export default function Form() {
                       
                       {question.type === 'checkbox' && (
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3">
-                          {question.options.map((option) => (
+                          {question.options?.map((option) => (
                             <label key={option.value} className={`flex items-center p-2 sm:p-3 bg-slate-50 rounded-xl border-2 ${colors.hover} cursor-pointer transition-all hover:shadow-md`}>
                               <input 
                                 type="checkbox" 
@@ -285,8 +286,8 @@ export default function Form() {
                             <span className="ml-4 text-red-600 font-medium">Significant</span>
                           </div>
                           <div className="flex justify-between text-sm text-slate-600">
-                            <span>{question.scaleLabels.min}</span>
-                            <span>{question.scaleLabels.max}</span>
+                            <span>{question.scaleLabels?.min}</span>
+                            <span>{question.scaleLabels?.max}</span>
                           </div>
                           <div className="text-center mt-2">
                             <span className="text-lg font-semibold text-slate-700">

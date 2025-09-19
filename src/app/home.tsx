@@ -83,7 +83,7 @@ export default function Home() {
             <div className="bg-white p-6 sm:p-8 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300">
               <div className="text-4xl mb-4">🌟</div>
               <h4 className="text-xl font-bold text-gray-800 mb-3">Inspire Hope</h4>
-              <p className="text-gray-600">Show others they're not alone in this journey</p>
+              <p className="text-gray-600">Show others they&apos;re not alone in this journey</p>
             </div>
             <div className="bg-white p-6 sm:p-8 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300">
               <div className="text-4xl mb-4">💝</div>
